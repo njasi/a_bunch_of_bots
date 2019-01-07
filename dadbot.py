@@ -13,7 +13,7 @@ TRIGGER_STICKERS = [
     ('CAADAwADuAAD3zLTBEV5-LhZIiJkAg',['Buck up.']), # my soul hurts
     ('CAADAwADwAAD3zLTBAABl0ACYJXbeQI',['This is an uwu free zone.']), # uwu
     ('CAADAwADxgAD3zLTBB8m_S3gDUW3Ag',['How about no.','Sounds a bit painful.']), # shove a lightbulb inside my dickhole daddy
-    ('CAADAwADyAAD3zLTBP5Y0z4p9JMoAg',['Insest is illegal']), # now fuck me daddy
+    ('CAADAwADyAAD3zLTBP5Y0z4p9JMoAg',['Incest is illegal']), # now fuck me daddy
     ('CAADAwADygAD3zLTBO_CGtaM2LrRAg',['yes']), # did i stutter daddy
     ('CAADAwADzAAD3zLTBAl7XLD9oFBjAg',['No problem.']), # ok thanks daddy <3
     ('CAADAwAD1gAD3zLTBNdMSWtxaA1rAg',['MMMMMMMMMMMMMMMMMMMMM']), # mmmmmmmmmmmmmMMMMmmMMMMMAAAAAAAAA

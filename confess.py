@@ -124,6 +124,7 @@ def main():
             respond()
         time.sleep(0.5)
 
+# for me to remotely stop it if i need to
 def lockdown(updates):
     for update in updates:
         try:
@@ -156,7 +157,7 @@ def send_data(data):
     for chat in chats:
         try:
             if not data['url'] is None:
-                get_url(data['url'] + f"&chat_id={chat}")
+                get_url(data['url'] + "&chat_id={}".format(chat))
         except Exception as e:
             print(str(e))
 
@@ -169,8 +170,6 @@ def respond():
         if not line: break
         data = json.loads(line)
         if int(time.time()) > data['send_time']:
-            url_oof = data['url']
-            # print(f'Sending {url_oof}')
             send_data(data)
             to_remove += [data]
     file.close()

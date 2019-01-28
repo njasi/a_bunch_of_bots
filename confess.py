@@ -74,43 +74,43 @@ def url_message_from_update(data):
     try:
         text = data['message']['text']
         text = urllib.parse.quote_plus(text)
-        return URL + f'sendMessage?text={text}'
+        return URL + 'sendMessage?text={}'.format(text)
     except Exception as e:
         pass
     try:
         sizes = data['message']['photo']
         file_id = sizes[len(sizes)-1]['file_id']
-        return URL + f'sendPhoto?photo={file_id}&caption={caption}'
+        return URL + 'sendPhoto?photo={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['audio']['file_id']
-        return URL + f'sendAudio?audio={file_id}&caption={caption}'
+        return URL + 'sendAudio?audio={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['document']['file_id']
-        return URL + f'sendDocument?document={file_id}&caption={caption}'
+        return URL + 'sendDocument?document={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['video']['file_id']
-        return URL + f'sendVideo?video={file_id}&caption={caption}'
+        return URL + 'sendVideo?video={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['animation']['file_id']
-        return URL + f'sendAnimation?animation={file_id}&caption={caption}'
+        return URL + 'sendAnimation?animation={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['voice']['file_id']
-        return URL + f'sendVoice?voice={file_id}&caption={caption}'
+        return URL + 'sendVoice?voice={}&caption={}'.format(file_id,caption)
     except Exception as e:
         pass
     try:
         file_id = data['message']['sticker']['file_id']
-        return URL + f'sendSticker?sticker={file_id}'
+        return URL + 'sendSticker?sticker={}'.format(file_id)
     except Exception as e:
         pass
      

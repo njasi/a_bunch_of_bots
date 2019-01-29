@@ -13,7 +13,7 @@ reader = open('token.txt','r')
 TOKEN = reader.readline()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 5 # !!!!! Change this if the script has to restart !!!!!
+confession_number = 129 # !!!!! Change this if the script has to restart !!!!!
 confession_messages = ['Thank you for your sins.']
 def load_chats():
     holder = []
@@ -111,6 +111,7 @@ def url_message_from_update(data):
         pass
     try:
         file_id = data['message']['sticker']['file_id']
+        confession_number -= 1
         return URL + 'sendSticker?sticker={}'.format(file_id)
     except Exception as e:
         pass

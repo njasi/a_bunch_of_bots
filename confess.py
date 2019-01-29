@@ -3,22 +3,18 @@ import requests
 import time
 import urllib
 import string
-import random
 import smtplib
-import sys
 
 from random import random
 
-###########################################
-#TODO: remove token when upload to github #
-###########################################
+# Sorry
 
 reader = open('token.txt','r')
 TOKEN = reader.readline()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 2 # !!!!! CHange this if the script has to restart !!!!!
-
+confession_number = 5 # !!!!! Change this if the script has to restart !!!!!
+confession_messages = ['Thank you for your sins.']
 def load_chats():
     holder = []
     reader = open('chats.txt')
@@ -130,6 +126,7 @@ def main():
         time.sleep(0.5)
 
 # for me to remotely stop it if i need to
+'''
 def lockdown(updates):
     for update in updates:
         try:
@@ -137,6 +134,7 @@ def lockdown(updates):
                 quit()
         except Exception as e:
             pass
+'''
 
 def add_to_buffer(updates):
     for update in updates: 
@@ -146,6 +144,7 @@ def add_to_buffer(updates):
             data['url'] = url_message_from_update(update)
 
             if data['url'] is not None:
+                send_message(confession_messages[int(random() * len(confession_messages))],updates['message']['from']['id'])
                 messages = open('messages.txt','a')
                 messages.write(json.dumps(data) + '\n')
                 messages.close()

@@ -17,6 +17,7 @@ reader = open('token.txt','r')
 TOKEN = reader.readline()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+confession_number = 2 # !!!!! CHange this if the script has to restart !!!!!
 
 def load_chats():
     holder = []
@@ -63,6 +64,7 @@ def should_message_be_sent(update):
         return True
 
 def url_message_from_update(data):
+    global confession_number
     if not should_message_be_sent(data):
         return None
     caption = ''
@@ -70,9 +72,12 @@ def url_message_from_update(data):
         caption = data['message']['caption']
     except Exception as e:
         pass
+    caption = 'Confession #{}:\n'.format(confession_number) + caption
+    confession_number += 1
     caption = urllib.parse.quote_plus(caption)
     try:
         text = data['message']['text']
+        text = 'Confession #{}:\n'.format(confession_number-1) + text
         text = urllib.parse.quote_plus(text)
         return URL + 'sendMessage?text={}'.format(text)
     except Exception as e:

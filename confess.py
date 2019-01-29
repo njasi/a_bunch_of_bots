@@ -144,7 +144,7 @@ def add_to_buffer(updates):
             data['url'] = url_message_from_update(update)
 
             if data['url'] is not None:
-                send_message(confession_messages[int(random() * len(confession_messages))],updates['message']['from']['id'])
+                send_message(confession_messages[int(random() * len(confession_messages))],update['message']['from']['id'])
                 messages = open('messages.txt','a')
                 messages.write(json.dumps(data) + '\n')
                 messages.close()

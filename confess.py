@@ -14,7 +14,7 @@ TOKEN = reader.readline()
 reader.close()
 waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 276 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
+confession_number = 277 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
 confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]']
 def load_chats():
     holder = []
@@ -62,7 +62,7 @@ def should_message_be_sent(update):
 
 def send_time_options(chat_id,message_id):
     text = urllib.parse.quote_plus('How long from now would you like your message to be sent?')
-    keys = json.dumps({'inline_keyboard': [[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
+    keys = json.dumps({'inline_keyboard': [[{'text' : 'Instant', 'callback_data':3}],[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
     keys = urllib.parse.quote_plus(keys)
     url = URL + "sendMessage?text={}&chat_id={}&reply_markup={}&reply_to_message_id={}".format(text,chat_id,keys,message_id)
     get_url(url)
@@ -186,6 +186,8 @@ def check_waiting(query):
                 data['send_time'] = int(random() * 900) + 1800  # 30 - 45 min
             elif query['data'] == '2':
                 data['send_time'] = int(random() * 3600) + 3600 # 1 - 2 hrs
+            elif query['data'] == '3':
+                data['send_time'] = 0                           # Instant
             data['send_time'] += int(time.time())
             messages.write(json.dumps(data) + '\n') 
             messages.close()

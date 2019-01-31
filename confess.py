@@ -208,7 +208,7 @@ def send_data(data):
             if not data['url'] is None:
                 get_url(data['url'] + "&chat_id={}".format(chat))
         except Exception as e:
-            # print(str(e))
+            pass
 
 def respond():
     file = open('messages.txt','r')

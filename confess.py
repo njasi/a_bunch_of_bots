@@ -12,9 +12,10 @@ from random import random
 reader = open('token.txt','r')
 TOKEN = reader.readline()
 reader.close()
+waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 266 # !!!!! Change this if the script has to restart !!!!!
-confession_messages = ['Thank you for your sins.']
+confession_number = 276 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
+confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]']
 def load_chats():
     holder = []
     reader = open('chats.txt')
@@ -58,6 +59,17 @@ def should_message_be_sent(update):
         return ((update['message']['chat']['id'] is not None) and update['message']['chat']['id'] == update['message']['from']['id']) and update['message']['text'] != '/start'
     except:
         return True
+
+def send_time_options(chat_id,message_id):
+    text = urllib.parse.quote_plus('How long from now would you like your message to be sent?')
+    keys = json.dumps({'inline_keyboard': [[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
+    keys = urllib.parse.quote_plus(keys)
+    url = URL + "sendMessage?text={}&chat_id={}&reply_markup={}&reply_to_message_id={}".format(text,chat_id,keys,message_id)
+    get_url(url)
+
+def delete_message(chat_id,message_id):
+    url = URL + 'deleteMessage?chat_id={}&message_id={}'.format(chat_id,message_id)
+    get_url(url)
 
 def url_message_from_update(data):
     global confession_number
@@ -118,6 +130,8 @@ def url_message_from_update(data):
     confession_number -= 1
      
 def main():
+    global waiting
+    waiting = []
     last_update_id = None
     while True:
         updates = get_updates(last_update_id)
@@ -139,21 +153,50 @@ def lockdown(updates):
 '''
 
 def add_to_buffer(updates):
-    for update in updates: 
+    global waiting
+    for update in updates:
         try:
+            if is_button_response(update):
+                check_waiting(update['callback_query'])
+                raise Exception('added_message')
             data = {}
-            data['send_time'] = int(time.time() + random() * 360 + 600)
             data['url'] = url_message_from_update(update)
+            data['id'] = update['message']['message_id']  #only stored temporarliy while the bot waits for a time option
+            data['from'] = update['message']['from']['id']
 
             if data['url'] is not None:
-                send_message(confession_messages[int(random() * len(confession_messages))],update['message']['from']['id'])
-                messages = open('messages.txt','a')
-                messages.write(json.dumps(data) + '\n')
-                messages.close()
+                send_time_options(update['message']['from']['id'],update['message']['message_id'])
+                waiting += [data]
         except Exception as e:
-            send_error(e,update)
-            returner = False
+            if not str(e) == 'added_message':
+                send_error(e,update)
+                returner = False
             
+def check_waiting(query):
+    global waiting
+    for message in waiting:
+        if query['from']['id'] == message['from'] and message['id'] == query['message']['reply_to_message']['message_id']:
+            waiting.remove(message)
+            messages = open('messages.txt','a')
+            data = {}
+            data['url'] = message['url']
+            if(query['data'] == '0'):
+                data['send_time'] = int(random() * 300) + 600   # 10 - 15 min
+            elif query['data'] == '1':
+                data['send_time'] = int(random() * 900) + 1800  # 30 - 45 min
+            elif query['data'] == '2':
+                data['send_time'] = int(random() * 3600) + 3600 # 1 - 2 hrs
+            data['send_time'] += int(time.time())
+            messages.write(json.dumps(data) + '\n') 
+            messages.close()
+            send_message(confession_messages[int(random() * len(confession_messages))],message['from'])
+
+def is_button_response(update):
+    try:
+        update['callback_query']
+    except Exception:
+        return False
+    return True
     
 def send_error(e,update):
     send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
@@ -165,7 +208,7 @@ def send_data(data):
             if not data['url'] is None:
                 get_url(data['url'] + "&chat_id={}".format(chat))
         except Exception as e:
-            print(str(e))
+            # print(str(e))
 
 def respond():
     file = open('messages.txt','r')

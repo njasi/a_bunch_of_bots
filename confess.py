@@ -144,8 +144,6 @@ def add_to_buffer(updates):
             data = {}
             data['send_time'] = int(time.time() + random() * 360 + 600)
             data['url'] = url_message_from_update(update)
-            print(update)
-            print("Number: " + str(confession_number))
 
             if data['url'] is not None:
                 send_message(confession_messages[int(random() * len(confession_messages))],update['message']['from']['id'])

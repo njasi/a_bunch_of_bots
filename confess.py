@@ -201,8 +201,9 @@ def is_button_response(update):
     return True
     
 def send_error(e,update):
-    send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
-    send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
+    if str(e) != 'message'
+        send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
+        send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 
 def send_data(data):
     for chat in chats:

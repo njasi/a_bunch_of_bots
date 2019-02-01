@@ -141,17 +141,6 @@ def main():
             respond()
         time.sleep(0.5)
 
-# for me to remotely stop it if i need to
-'''
-def lockdown(updates):
-    for update in updates:
-        try:
-            if update['message']['text'] == '!!!LOCKDOWN!!!' and update['message']['from']['id'] == 569239019:
-                quit()
-        except Exception as e:
-            pass
-'''
-
 def add_to_buffer(updates):
     global waiting
     for update in updates:
@@ -201,7 +190,7 @@ def is_button_response(update):
     return True
     
 def send_error(e,update):
-    if str(e) != 'message'
+    if str(e) != 'message':
         send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
         send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 

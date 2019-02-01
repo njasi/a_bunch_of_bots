@@ -14,7 +14,6 @@ TOKEN = reader.readline()
 reader.close()
 waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 290 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
 confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]']
 def load_chats():
     holder = []
@@ -67,67 +66,138 @@ def send_time_options(chat_id,message_id):
     url = URL + "sendMessage?text={}&chat_id={}&reply_markup={}&reply_to_message_id={}".format(text,chat_id,keys,message_id)
     get_url(url)
 
-def delete_message(chat_id,message_id):
-    url = URL + 'deleteMessage?chat_id={}&message_id={}'.format(chat_id,message_id)
-    get_url(url)
-
-def url_message_from_update(data):
-    global confession_number
-    if not should_message_be_sent(data):
-        return None
-    caption = ''
-    try:
-        caption = data['message']['caption']
-    except Exception as e:
-        pass
-    caption = 'Confession #{}:\n'.format(confession_number) + caption
-    confession_number += 1
-    caption = urllib.parse.quote_plus(caption)
-    try:
-        text = data['message']['text']
-        text = 'Confession #{}:\n'.format(confession_number-1) + text
-        text = urllib.parse.quote_plus(text)
+def url_message_from_data(data):
+    type = data['type']
+    number = get_confession_number() + 1
+    update_confession_number(number)
+    if(type == 'text'):
+        text = urllib.parse.quote_plus('Confession #{}:\n'.format(number) + data['text'])
         return URL + 'sendMessage?text={}'.format(text)
-    except Exception as e:
+
+    elif(type == 'sticker'):
+    update_confession_number(number - 1)
+        return URL + 'sendSticker?sticker={}'.format(data['file_id'])
+
+    elif(type == 'photo'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendPhoto?photo={}&caption={}'.format(data['file_id'],caption)
+
+    elif(type == 'audio'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendAudio?audio={}&caption={}'.format(data['file_id'],caption)
+
+    elif(type == 'document'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendDocument?document={}&caption={}'.format(data['file_id'],caption)
+
+    elif(type == 'video'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendVideo?video={}&caption={}'.format(data['file_id'],caption)
+
+    elif(type == 'animation'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendAnimation?animation={}&caption={}'.format(data['file_id'],caption)
+
+    elif(type == 'voice'):
+        caption = 'Confession #{}:\n'.format(number) + data['caption']
+        caption = urllib.parse.quote_plus(caption)
+        return URL + 'sendVoice?voice={}&caption={}'.format(data['file_id'],caption)
+    
+    
+
+def data_from_update(update):
+    data = {}
+    if not should_message_be_sent(update):
+        return None
+    try: # normal text message
+        text = update['message']['text']
+        data['type'] = 'text'
+        data['text'] = text
+        return data
+    except Exception:
         pass
-    try:
-        sizes = data['message']['photo']
-        file_id = sizes[len(sizes)-1]['file_id']
-        return URL + 'sendPhoto?photo={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+        
+    try: # stickers 
+        file_id = update['message']['sticker']['file_id']
+        data['type'] = 'sticker'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['audio']['file_id']
-        return URL + 'sendAudio?audio={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+
+    try: # captions for documents and such
+        caption = update['message']['caption']
+    except Exception:
+        caption = ''
+    
+    data['caption'] = caption # all of the types after this have captions
+
+    try: # photo
+        file_id = update['message']['caption'][len(sizes)-1]['file_id']
+        data['type'] = 'photo'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['document']['file_id']
-        return URL + 'sendDocument?document={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+        
+    try: # audio
+        file_id = update['message']['audio']['file_id']
+        data['type'] = 'audio'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['video']['file_id']
-        return URL + 'sendVideo?video={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+        
+    try: # document
+        file_id = update['message']['document']['file_id']
+        data['type'] = 'document'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['animation']['file_id']
-        return URL + 'sendAnimation?animation={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+
+    try: # video
+        file_id = update['message']['video']['file_id']
+        data['type'] = 'video'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['voice']['file_id']
-        return URL + 'sendVoice?voice={}&caption={}'.format(file_id,caption)
-    except Exception as e:
+
+    try: # animation
+        file_id = update['message']['animation']['file_id']
+        data['type'] = 'animation'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    try:
-        file_id = data['message']['sticker']['file_id']
-        confession_number -= 1
-        return URL + 'sendSticker?sticker={}'.format(file_id)
-    except Exception as e:
+
+    try: # voice
+        file_id = update['message']['voice']['file_id']
+        data['type'] = 'voice'
+        data['file_id'] = file_id
+        return data
+    except Exception:
         pass
-    confession_number -= 1
+
+    return None # to detect that a message that is not sendable was recived
+     
+def update_confession_number(number):
+    num = open('num.txt','w+')
+    num.write(str(number))
+    num.close()
+
+def get_confession_number():
+    num = open('num.txt','r')
+    hold = int(num.readline())
+    num.close()
+    return hold
+
      
 def main():
     global waiting
@@ -141,17 +211,6 @@ def main():
             respond()
         time.sleep(0.5)
 
-# for me to remotely stop it if i need to
-'''
-def lockdown(updates):
-    for update in updates:
-        try:
-            if update['message']['text'] == '!!!LOCKDOWN!!!' and update['message']['from']['id'] == 569239019:
-                quit()
-        except Exception as e:
-            pass
-'''
-
 def add_to_buffer(updates):
     global waiting
     for update in updates:
@@ -160,15 +219,17 @@ def add_to_buffer(updates):
                 check_waiting(update['callback_query'])
                 raise Exception('added_message')
             data = {}
-            data['url'] = url_message_from_update(update)
-            data['id'] = update['message']['message_id']  #only stored temporarliy while the bot waits for a time option
-            data['from'] = update['message']['from']['id']
+            data['data'] = data_from_update(update)
 
-            if data['url'] is not None:
+            if data['data'] is not None:
+                data['id'] = update['message']['message_id']  #only stored temporarliy while the bot waits for a time option
+                data['from'] = update['message']['from']['id']
+                data['data'] = json.dumps(data['data'])
                 send_time_options(update['message']['from']['id'],update['message']['message_id'])
                 waiting += [data]
         except Exception as e:
             if not str(e) == 'added_message':
+                raise(e)
                 send_error(e,update)
                 returner = False
             
@@ -179,7 +240,6 @@ def check_waiting(query):
             waiting.remove(message)
             messages = open('messages.txt','a')
             data = {}
-            data['url'] = message['url']
             if(query['data'] == '0'):
                 data['send_time'] = int(random() * 300) + 600   # 10 - 15 min
             elif query['data'] == '1':
@@ -189,8 +249,9 @@ def check_waiting(query):
             elif query['data'] == '3':
                 data['send_time'] = 0                           # Instant
             elif query['data'] == '4':
-                send_message('Okay, your confession was canceled.',message['from'])
+                send_message('Okay, your confession was canceled.', message['from'])
                 return   
+            data['data'] = message['data']
             data['send_time'] += int(time.time())
             messages.write(json.dumps(data) + '\n') 
             messages.close()
@@ -212,8 +273,8 @@ def send_error(e,update):
 def send_data(data):
     for chat in chats:
         try:
-            if not data['url'] is None:
-                get_url(data['url'] + "&chat_id={}".format(chat))
+            if not data['data'] is None:
+                get_url(url_message_from_data(json.loads(data['data'])) + "&chat_id={}".format(chat))
         except Exception as e:
             pass
 

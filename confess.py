@@ -271,10 +271,11 @@ def send_error(e,update):
         # send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 
 def send_data(data):
+    url = url_message_from_data(json.loads(data['data']))
     for chat in chats:
         try:
             if not data['data'] is None:
-                get_url(url_message_from_data(json.loads(data['data'])) + "&chat_id={}".format(chat))
+                get_url(url + "&chat_id={}".format(chat))
         except Exception as e:
             pass
 

@@ -14,7 +14,7 @@ TOKEN = reader.readline()
 reader.close()
 waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-confession_number = 277 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
+confession_number = 290 # !!!!! Change this if the script has to restart !!!!! (put it at the number you want)
 confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]']
 def load_chats():
     holder = []
@@ -189,6 +189,7 @@ def check_waiting(query):
             elif query['data'] == '3':
                 data['send_time'] = 0                           # Instant
             elif query['data'] == '4':
+                send_message('Okay, your confession was canceled.',message['from'])
                 return   
             data['send_time'] += int(time.time())
             messages.write(json.dumps(data) + '\n') 

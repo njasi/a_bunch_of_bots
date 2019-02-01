@@ -62,7 +62,7 @@ def should_message_be_sent(update):
 
 def send_time_options(chat_id,message_id):
     text = urllib.parse.quote_plus('How long from now would you like your message to be sent?')
-    keys = json.dumps({'inline_keyboard': [[{'text' : 'Instant', 'callback_data':3}],[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
+    keys = json.dumps({'inline_keyboard': [[{'text' : 'Instant', 'callback_data':3},{'text' : 'Cancel', 'callback_data':4}],[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
     keys = urllib.parse.quote_plus(keys)
     url = URL + "sendMessage?text={}&chat_id={}&reply_markup={}&reply_to_message_id={}".format(text,chat_id,keys,message_id)
     get_url(url)
@@ -141,6 +141,17 @@ def main():
             respond()
         time.sleep(0.5)
 
+# for me to remotely stop it if i need to
+'''
+def lockdown(updates):
+    for update in updates:
+        try:
+            if update['message']['text'] == '!!!LOCKDOWN!!!' and update['message']['from']['id'] == 569239019:
+                quit()
+        except Exception as e:
+            pass
+'''
+
 def add_to_buffer(updates):
     global waiting
     for update in updates:
@@ -177,6 +188,8 @@ def check_waiting(query):
                 data['send_time'] = int(random() * 3600) + 3600 # 1 - 2 hrs
             elif query['data'] == '3':
                 data['send_time'] = 0                           # Instant
+            elif query['data'] == '4':
+                return   
             data['send_time'] += int(time.time())
             messages.write(json.dumps(data) + '\n') 
             messages.close()
@@ -190,9 +203,10 @@ def is_button_response(update):
     return True
     
 def send_error(e,update):
-    if str(e) != 'message':
-        send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
-        send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
+    pass
+    # if str(e) != 'message':
+        # send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
+        # send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 
 def send_data(data):
     for chat in chats:

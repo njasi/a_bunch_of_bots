@@ -75,7 +75,7 @@ def url_message_from_data(data):
         return URL + 'sendMessage?text={}'.format(text)
 
     elif(type == 'sticker'):
-    update_confession_number(number - 1)
+        update_confession_number(number - 1)
         return URL + 'sendSticker?sticker={}'.format(data['file_id'])
 
     elif(type == 'photo'):

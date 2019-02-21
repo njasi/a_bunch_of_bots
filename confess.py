@@ -7,8 +7,6 @@ import smtplib
 
 from random import random
 
-# Sorry
-
 reader = open('token.txt','r')
 TOKEN = reader.readline()
 reader.close()
@@ -137,12 +135,17 @@ def data_from_update(update):
     
     data['caption'] = caption # all of the types after this have captions
 
+
+
+
+
     try: # photo
-        file_id = update['message']['caption'][len(sizes)-1]['file_id']
+        sizes = update['message']['photo']
+        file_id = update['message']['photo'][len(sizes)-1]['file_id']
         data['type'] = 'photo'
         data['file_id'] = file_id
         return data
-    except Exception:
+    except Exception as e:
         pass
         
     try: # audio

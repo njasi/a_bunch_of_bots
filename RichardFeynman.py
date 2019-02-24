@@ -9,7 +9,9 @@ import wikipedia
 import warnings
 import os
 
-TOKEN = "607870320:AAHM64JdBsWIZhtfYpw-o8kNjGnwI-UC7dw"
+reader = open('ftoken.txt','r')
+TOKEN = reader.readline()
+reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 app_id = "VKA5LT-H9GK59QQYJ"
 client = wolframalpha.Client(app_id)

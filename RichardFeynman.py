@@ -11,9 +11,9 @@ import os
 
 reader = open('ftoken.txt','r')
 TOKEN = reader.readline()
+app_id = reader.readline()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-app_id = "VKA5LT-H9GK59QQYJ"
 client = wolframalpha.Client(app_id)
 
 TRIGGER_STICKERS = [

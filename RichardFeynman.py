@@ -85,7 +85,7 @@ def respond_smart(update):
     chat = update["message"]["chat"]["id"]
     r = search(text)
     if r[0] == None:
-        send_message('That\'s a dumb question.')
+        send_message('That\'s a dumb question.', chat)
         return
     send_message(r[0], chat)
     if r[1] != None:

@@ -56,6 +56,11 @@ def send_message(text, chat_id):
     text = urllib.parse.quote_plus(text)
     url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
     get_url(url)
+    
+def send_reply_with_photo(text, photo, chat_id):
+    text = urllib.parse.quote_plus(text)
+    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+    get_url(url)
 
 def main():
     last_update_id = None
@@ -98,7 +103,7 @@ def respond_smart(update):
         files = {'photo': open('out.jpg', 'rb')}
         data = {'chat_id' : chat}
         r = requests.post(url, files=files, data=data)
-        os.remove('out.jpg')
+        # os.remove('out.jpg')
 
 def search(text=''):
   res = client.query(text)

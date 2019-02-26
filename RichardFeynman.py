@@ -70,11 +70,9 @@ def respond(updates):
     for update in updates["result"]:
         try:
             respond_smart(update)
-            for response in TRIGGER_STICKERS:
-                respond_trigger_stickers(update, response[1], stickerid = response[0])
-            respond_trigger_words(update,False,[["daddy"]],["You called for me?"])
             os.remove('out.jpg')
         except Exception as e:
+            throw(e)
             return
 
 def respond_smart(update):
@@ -90,6 +88,9 @@ def respond_smart(update):
         return
     # send_message(r[0], chat)
     if r[1] != None:
+        print(r[0])
+        print()
+        print(r[1])
         f = open('out.jpg','wb')
         f.write(urllib.request.urlopen(r[1]).read())
         f.close()
@@ -98,43 +99,6 @@ def respond_smart(update):
         data = {'chat_id' : chat}
         r = requests.post(url, files=files, data=data)
         os.remove('out.jpg')
-
-def respond_trigger_stickers(update, responses, stickerid = -1, packid = -1):
-    try:
-        sticker = update['message']['sticker']['file_id']
-        pack = update['message']['sticker']['set_name']
-        chat = update["message"]["chat"]["id"]
-        if stickerid == sticker:
-            send_message(responses[random.randint(0,len(responses)-1)],chat)
-        if packid == pack:
-            # do somthing here
-            pass
-    except Exception as e:
-        pass
-        # print(e)
-
-def respond_trigger_words(update,tokenize,triggers,responses):
-    text = strip_punct(update["message"]["text"])
-    if tokenize:
-        text=text.split()
-    chat = update["message"]["chat"]["id"]
-    b = True
-    for ands in triggers:
-        a = False
-        for ors in ands:
-            if tokenize:
-                a = a or ors in text
-            else:
-                a = a or text.find(ors)!=-1
-        b = b and a
-    if b:
-        send_message(responses[random.randint(0,len(responses)-1)],chat)
-        raise Exception('a response was triggered')
-
-def strip_punct(text):
-    exclude=set(string.punctuation)
-    exclude.add('’')
-    return (''.join(ch for ch in text if ch not in exclude)).lower()
 
 def search(text=''):
   res = client.query(text)

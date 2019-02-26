@@ -71,17 +71,18 @@ def respond(updates):
         try:
             respond_smart(update)
         except Exception as e:
-            throw(e)
+            print(e)
             return
 
 def respond_smart(update):
+    print(text)
     text = update["message"]["text"]
     if not "Feynman: " in text:
         return
     text = text[9:]
     chat = update["message"]["chat"]["id"]
     r = search(text)
-    print(text)
+    print(r)
     if r[0] == None:  # unable to find anything
         send_message('That\'s a dumb question.', chat)
         return

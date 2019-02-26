@@ -76,13 +76,13 @@ def respond(updates):
 
 def respond_smart(update):
     text = update["message"]["text"]
+    chat = update["message"]["chat"]["id"]
     print(text)
     if not "Feynman: " in text:
         return
     text = text[9:]
-    chat = update["message"]["chat"]["id"]
     r = search(text)
-    print(r)
+    print("RESULT: {}".format(r))
     if r[0] == None:  # unable to find anything
         send_message('That\'s a dumb question.', chat)
         return

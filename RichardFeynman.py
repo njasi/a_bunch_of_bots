@@ -75,8 +75,8 @@ def respond(updates):
             return
 
 def respond_smart(update):
-    print(text)
     text = update["message"]["text"]
+    print(text)
     if not "Feynman: " in text:
         return
     text = text[9:]

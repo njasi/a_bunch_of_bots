@@ -70,7 +70,6 @@ def respond(updates):
     for update in updates["result"]:
         try:
             respond_smart(update)
-            os.remove('out.jpg')
         except Exception as e:
             throw(e)
             return
@@ -132,7 +131,6 @@ def search_wiki(query):
             answer = wikipedia.summary(query, sentences=1)
     except wikipedia.PageError as err:
         answer = None
-    
     return answer
 
 def removeBrackets(variable):

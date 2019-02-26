@@ -86,7 +86,7 @@ def respond_smart(update):
     if r[0] == None:  # unable to find anything
         send_message('That\'s a dumb question.', chat)
         return
-    # send_message(r[0], chat)
+    send_message(r[0], chat)
     if r[1] != None:
         print(r[0])
         print()

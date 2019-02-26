@@ -86,10 +86,10 @@ def respond_smart(update):
     text = text[9:]
     chat = update["message"]["chat"]["id"]
     r = search(text)
-    if r[0] == None:
+    if r[0] == None:  # unable to find anything
         send_message('That\'s a dumb question.', chat)
         return
-    send_message(r[0], chat)
+    # send_message(r[0], chat)
     if r[1] != None:
         f = open('out.jpg','wb')
         f.write(urllib.request.urlopen(r[1]).read())
@@ -97,7 +97,7 @@ def respond_smart(update):
         url = "https://api.telegram.org/bot" + TOKEN + "/sendPhoto";
         files = {'photo': open('out.jpg', 'rb')}
         data = {'chat_id' : chat}
-        r= requests.post(url, files=files, data=data)
+        r= requests.post(url, files=files, data=data, caption=r[0])
         os.remove('out.jpg')
 
 def respond_trigger_stickers(update, responses, stickerid = -1, packid = -1):
@@ -105,7 +105,6 @@ def respond_trigger_stickers(update, responses, stickerid = -1, packid = -1):
         sticker = update['message']['sticker']['file_id']
         pack = update['message']['sticker']['set_name']
         chat = update["message"]["chat"]["id"]
-        # print(f'Sticker: {sticker}\tId Needed:{stickerid}')
         if stickerid == sticker:
             send_message(responses[random.randint(0,len(responses)-1)],chat)
         if packid == pack:
@@ -133,27 +132,6 @@ def respond_trigger_words(update,tokenize,triggers,responses):
         send_message(responses[random.randint(0,len(responses)-1)],chat)
         raise Exception('a response was triggered')
 
-def respond_trigger_words_user(update,tokenize,triggers,responses,userid):
-    text = strip_punct(update["message"]["text"])
-    if tokenize:
-        text=text.split()
-    chat = update["message"]["chat"]["id"]
-    b = True
-    for ands in triggers:
-        a = False
-        for ors in ands:
-            if tokenize:
-                a = a or ors in text
-            else:
-                a = a or text.find(ors)!=-1
-        b = b and a
-    if b:
-        try:
-            send_message(responses[userid.index(update["message"]["from"]["id"])+1],chat)
-        except Exception as e:
-            send_message(responses[0],chat)
-        raise Exception('a response was triggered')
-
 def strip_punct(text):
     exclude=set(string.punctuation)
     exclude.add('’')
@@ -167,14 +145,12 @@ def search(text=''):
     result = ''
     pod0 = res['pod'][0]
     pod1 = res['pod'][1]
+    question = resolveListOrDict(pod0['subpod'])
+    question = removeBrackets(question)
     if (('definition' in pod1['@title'].lower()) or ('result' in  pod1['@title'].lower()) or (pod1.get('@primary','false') == 'true')):
       result = resolveListOrDict(pod1['subpod'])
-      question = resolveListOrDict(pod0['subpod'])
-      question = removeBrackets(question)
       return result, primaryImage(question)
     else:
-      question = resolveListOrDict(pod0['subpod'])
-      question = removeBrackets(question)
       return search_wiki(question), primaryImage(question)
 
 def search_wiki(query):

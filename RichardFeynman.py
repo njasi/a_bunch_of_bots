@@ -69,14 +69,12 @@ def main():
 def respond(updates):
     for update in updates["result"]:
         try:
+            respond_smart(update)
             for response in TRIGGER_STICKERS:
                 respond_trigger_stickers(update, response[1], stickerid = response[0])
-            #respond_trigger_words(update,False,[["dinner","lunch","breakfast","dessert","supper"],"what",["I don't know, ask your mother.","How would I know?","You know I can't cook."])
             respond_trigger_words(update,False,[["daddy"]],["You called for me?"])
-            respond_smart(update)
             os.remove('out.jpg')
         except Exception as e:
-            # print(e)
             return
 
 def respond_smart(update):
@@ -86,6 +84,7 @@ def respond_smart(update):
     text = text[9:]
     chat = update["message"]["chat"]["id"]
     r = search(text)
+    print(text)
     if r[0] == None:  # unable to find anything
         send_message('That\'s a dumb question.', chat)
         return
@@ -94,10 +93,10 @@ def respond_smart(update):
         f = open('out.jpg','wb')
         f.write(urllib.request.urlopen(r[1]).read())
         f.close()
-        url = "https://api.telegram.org/bot" + TOKEN + "/sendPhoto";
+        url = URL + "/sendPhoto";
         files = {'photo': open('out.jpg', 'rb')}
         data = {'chat_id' : chat}
-        r= requests.post(url, files=files, data=data, caption=r[0])
+        r = requests.post(url, files=files, data=data)
         os.remove('out.jpg')
 
 def respond_trigger_stickers(update, responses, stickerid = -1, packid = -1):

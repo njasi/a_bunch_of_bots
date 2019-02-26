@@ -58,14 +58,12 @@ def send_message(text, chat_id):
     get_url(url)
 
 def main():
-    warnings.filterwarnings('ignore', category=UserWarning)
     last_update_id = None
     while True:
         updates = get_updates(last_update_id)
-        if 'result' in updates:
-            if len(updates["result"]) > 0:
-                last_update_id = get_last_update_id(updates) + 1
-                respond(updates)
+        if len(updates["result"]) > 0:
+            last_update_id = get_last_update_id(updates) + 1
+            respond(updates)
         time.sleep(0.5)
 
 def respond(updates):

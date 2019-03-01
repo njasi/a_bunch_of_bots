@@ -9,13 +9,15 @@ import wikipedia
 import warnings
 import os
 
+QUIT = False
+
 reader = open('ftoken.txt','r')
 TOKEN = reader.readline().strip()
 reader = open('wolfram.txt','r')
 app_id = reader.readline().strip()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-client = wolframalpha.Client(app_id)
+client = wolframalpha.Client("VKA5LT-H9GK59QQYJ")
 
 TRIGGER_STICKERS = [
     ('CAADAwADxAAD3zLTBALNnvfeN-vcAg',['no u']),
@@ -52,14 +54,14 @@ def get_last_chat_id_and_text(updates):
     chat_id = updates["result"][last_update]["message"]["chat"]["id"]
     return (text, chat_id)
 
-def send_message(text, chat_id):
+def send_reply(text, chat_id, reply_to_id):
     text = urllib.parse.quote_plus(text)
-    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+    url = URL + "sendMessage?text={}&chat_id={}&reply_to_message_id={}".format(text, chat_id,reply_to_id)
     get_url(url)
     
-def send_reply_with_photo(text, photo, chat_id):
-    text = urllib.parse.quote_plus(text)
-    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
+def send_reply_with_photo(caption, photo_url, chat_id, reply_to_id):
+    caption = text = urllib.parse.quote_plus(caption)
+    url = URL + 'sendPhoto?photo={}&caption={}&chat_id={}&reply_to_message_id={}'.format(photo_url,caption,chat_id,reply_to_id)
     get_url(url)
 
 def main():
@@ -68,6 +70,8 @@ def main():
         updates = get_updates(last_update_id)
         if len(updates["result"]) > 0:
             last_update_id = get_last_update_id(updates) + 1
+            if(QUIT):
+                quit()
             respond(updates)
         time.sleep(0.5)
 
@@ -76,37 +80,39 @@ def respond(updates):
         try:
             respond_smart(update)
         except Exception as e:
-            print(e)
-            return
+            # raise(e)
+            pass
 
 def respond_smart(update):
+    global QUIT
     text = update["message"]["text"]
     chat = update["message"]["chat"]["id"]
-    print(text)
-    if not "Feynman: " in text:
-        return
-    text = text[9:]
-    r = search(text)
-    print("RESULT: {}".format(r))
-    if r[0] == None:  # unable to find anything
-        send_message('That\'s a dumb question.', chat)
-        return
-    send_message(r[0], chat)
-    if r[1] != None:
-        print(r[0])
-        print()
-        print(r[1])
-        f = open('out.jpg','wb')
-        f.write(urllib.request.urlopen(r[1]).read())
-        f.close()
-        url = URL + "/sendPhoto";
-        files = {'photo': open('out.jpg', 'rb')}
-        data = {'chat_id' : chat}
-        r = requests.post(url, files=files, data=data)
-        # os.remove('out.jpg')
+    reply_id = update["message"]["message_id"]
 
-def search(text=''):
-  res = client.query(text)
+    if(text == "/QUIT"):
+        QUIT = True
+
+    if not "@RichardFeynmanBot" in text:
+        return 
+    text = ("".join(text.split("@RichardFeynmanBot"))).strip()
+
+    print(text)
+    r = search(text)
+
+    print("RESULT: \n{}".format(r))
+    if r[0] == None:  # unable to find anything
+        send_reply('That\'s a dumb question.', chat,["message"]["message_id"])
+        return
+    if r[1] != None: # if it finds an image it will send it with the caption  #TODO: caption has a char limit of 1024
+        print(r[1])
+        send_reply_with_photo(r[0], r[1], chat, reply_id)
+        return
+    send_reply(r[0],chat,reply_id) # if there is not an image but it does find somthing
+    return
+
+def search(text = ''):
+  # res = client.query(text)
+  res = {'@success' : "false"}
   if res['@success'] == 'false':
      return search_wiki(text), primaryImage(text)
   else:
@@ -150,13 +156,15 @@ def resolveListOrDict(variable):
 
 def primaryImage(title=''):
     url = 'http://en.wikipedia.org/w/api.php'
-    data = {'action':'query', 'prop':'pageimages','format':'json','piprop':'original','titles':title}
+    data = {'action':'query', 'prop':'pageimages','format':'json','piprop':'thumbnail','titles':title}
     try:
-        res = requests.get(url, params=data)
+        res = requests.get(url, params = data)
+        print("RES: {}".format(res.json()))
         key = list(res.json()['query']['pages'].keys())[0]
-        imageUrl = res.json()['query']['pages'][key]['original']['source']
+        imageUrl = res.json()['query']['pages'][key]['thumbnail']['source']
         return imageUrl
     except Exception as err:
+        print("ERROR: {}".format(err))
         return None
 
 if __name__ == '__main__':

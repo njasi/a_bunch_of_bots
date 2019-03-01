@@ -96,15 +96,15 @@ def respond_smart(update):
         return 
     text = ("".join(text.split("@RichardFeynmanBot"))).strip()
 
-    print(text)
+    # print(text)
     r = search(text)
 
-    print("RESULT: \n{}".format(r))
+    # print("RESULT: \n{}".format(r))
     if r[0] == None:  # unable to find anything
         send_reply('That\'s a dumb question.', chat,["message"]["message_id"])
         return
     if r[1] != None: # if it finds an image it will send it with the caption  #TODO: caption has a char limit of 1024
-        print(r[1])
+        # print(r[1])
         send_reply_with_photo(r[0], r[1], chat, reply_id)
         return
     send_reply(r[0],chat,reply_id) # if there is not an image but it does find somthing
@@ -127,7 +127,7 @@ def search(text = ''):
     else:
         question = resolveListOrDict(pod0['subpod'])
         question = removeBrackets(question)
-        print("QUESTION: {}".format(question))
+        # print("QUESTION: {}".format(question))
         return search_wiki(question), primaryImage(question)
 
 def search_wiki(query):
@@ -159,15 +159,15 @@ def resolveListOrDict(variable):
 
 def primaryImage(title=''):
     url = 'http://en.wikipedia.org/w/api.php'
-    data = {'action':'query', 'prop':'pageimages','format':'json','piprop':'thumbnail','titles':title}
+    data = {'action':'query', 'prop':'pageimages','format':'json','piprop':'original','titles':title}
     try:
         res = requests.get(url, params = data)
-        print("RES: {}".format(res.json()))
+        # print("RES: {}".format(res.json()))
         key = list(res.json()['query']['pages'].keys())[0]
-        imageUrl = res.json()['query']['pages'][key]['thumbnail']['source']
+        imageUrl = res.json()['query']['pages'][key]['original']['source']
         return imageUrl
     except Exception as err:
-        print("ERROR: {}".format(err))
+        # print("ERROR: {}".format(err))
         return None
 
 if __name__ == '__main__':

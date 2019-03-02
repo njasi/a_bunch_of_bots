@@ -17,7 +17,7 @@ reader = open('wolfram.txt','r')
 app_id = reader.readline().strip()
 reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-client = wolframalpha.Client("VKA5LT-H9GK59QQYJ")
+client = wolframalpha.Client(app_id)
 
 TRIGGER_STICKERS = [
     ('CAADAwADxAAD3zLTBALNnvfeN-vcAg',['no u']),

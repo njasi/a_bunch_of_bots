@@ -201,7 +201,7 @@ def add_to_buffer(updates):
                 waiting += [data]
         except Exception as e:
             if not str(e) == 'added_message':
-                raise(e)
+                #raise(e)
                 send_error(e,update)
                 returner = False
             
@@ -237,9 +237,8 @@ def is_button_response(update):
     return True
     
 def send_error(e,update):
-    pass
     # if str(e) != 'message':
-        # send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
+    BOT.send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e), update['message']['from']['id'])
         # send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 
 def send_data(data):

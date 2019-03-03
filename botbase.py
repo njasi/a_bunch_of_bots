@@ -1,13 +1,14 @@
 import urllib
 import json
 import requests
+import string
 from random import random
 
 class BotBase:
     def __init__(self, url):
         self.URL = url
 
-    def get_url(url):
+    def get_url(self, url):
         response = requests.get(url)
         content = response.content.decode("utf8")
         return content
@@ -57,7 +58,6 @@ class BotBase:
         url = self.URL + 'sendPhoto?photo={}&caption={}&chat_id={}&reply_to_message_id={}'.format(photo_url,caption,chat_id,reply_to_id)
         self.get_url(url)
 
-
     def respond_trigger_words(self, update, tokenize, triggers, responses):
         text = self.strip_punct(update["message"]["text"])
         if tokenize:
@@ -97,13 +97,12 @@ class BotBase:
                 self.send_message(responses[0],chat)
                 raise Exception('a response was triggered')
 
-                
-    def respond_trigger_sticker(update, responses, stickerid = -1, packid = -1):
+    def respond_trigger_sticker(self, update, responses, stickerid = -1, packid = -1):
         try:
             sticker = update['message']['sticker']['file_id']
             pack = update['message']['sticker']['set_name']
             chat = update["message"]["chat"]["id"]
             if stickerid == sticker:
-                BOT.send_message(responses[random.randint(0,len(responses)-1)],chat)
+                self.send_message(responses[random.randint(0,len(responses)-1)],chat)
         except Exception as e:
             pass

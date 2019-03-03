@@ -8,7 +8,7 @@ import botbase
 
 TOKEN = "672157411:AAF7HxbbDyZq5_lGK8WFzPx4_zaj5BHCSrQ"
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-BOT = botbase(URL)
+BOT = botbase.BotBase(URL)
 TRIGGER_STICKERS = [
     ('CAADAwADsAAD3zLTBKfU4jQkFBUNAg',['Consider it done.']), # dispose of me daddy
     ('CAADAwADuAAD3zLTBEV5-LhZIiJkAg',['Buck up.']), # my soul hurts

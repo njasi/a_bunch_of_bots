@@ -8,7 +8,7 @@ import botbase
 
 TOKEN = "739099604:AAH-RhkNrZ_P5KO_0KXtfTGbR28QI9QXxIE"
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-BOT = botbase(URL)
+BOT = botbase.BotBase(URL)
 
 def main():
     last_update_id = None

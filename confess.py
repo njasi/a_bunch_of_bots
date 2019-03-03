@@ -12,7 +12,7 @@ TOKEN = reader.readline()
 reader.close()
 waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-BOT = botbase(URL)
+BOT = botbase.BotBase(URL)
 confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]',"Confess me harder daddy","How does that make you feel?","According to all know laws of aviation, there is no way the bee should be able to fly.","M̊̏̎ͯ̓̌̑u͇̫͖d̼̱̭̓̑ḣ̰̝̜͕̳ͮ͆͐u̸͇̙͓̗̮̅̽ͦ̈́t̩̘ͥ̑ͮͩs̫̺̹̙̻̱̃̆ͬͪͫ̅̂́ ͖̭̋̽̓̐̄ͨͥì̠̮̫͖s̪̳̳̳̻̞̣͘ ̤͓̃ͪͤ̑t̰̖͔̦̻̼ͥ͆ͤͅh̤̤e̿ͥ̿̂̉͡ ̬̤̼͊̿̃̍́͗͢b͉͔͈͈̯͆̆̆̈́̌̓̇e̖̘̬̝̓͂̍͑̾̅̚s͍̤͕͉̔́͒̈ͤ͋͗ͅț͓͕̭̼̤̯̉̃̓ͦ͂͌ ̋͒ͯ͂̎̿̀ȍ̴̞̩̲͚͎̳̹ͥͩf͙̬̰̃̌̄̍ͬ̽ͥ ͓̹̮͖̊â̻̜̯͓͉̯̾͟l̥̙ͫ̆̓̈́̐lͨ̈̍̾̉͐͢ ̖̳̣̭͚̲̊ͦ̓̿p̪̞͋ͬ͞o͂̾̇̀̒́š͇ͤ̽̿͗s͓̰̺̤̀̽̒̾͋i͕̺͓̪̺̻̙b͚̼͇̽ͨ̈͢lͯ͏͓ę̠̹̯ͪ̋ͫͭͅ ͤ̄ͨ̀p̞͚̘͉̟͚ͫà̫̟͖̗r̮̮͎̦̗̘̙͛̽͗̃ͪͭ͐͝t̸̳̦̪̭̼͓̮̂ͯ͐́̓̈́̄y̝̬͊̅́ ̤͛̒̌t͙̤͇̪̳͍̿̂̊̐̉͌͜h̷͕͎̊̽e͜m̬͍̝̳̮̊eͮ͆̓ͫ̚ͅs̺̟̫͐͐ͦ"]
 
 def load_chats():

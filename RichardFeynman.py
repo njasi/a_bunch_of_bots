@@ -15,7 +15,7 @@ reader.close()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 client = wolframalpha.Client(app_id)
 
-BOT = botbase()
+BOT = botbase.BotBase(URL)
 
 TRIGGER_STICKERS = [
     ('CAADAwADxAAD3zLTBALNnvfeN-vcAg',['no u']),

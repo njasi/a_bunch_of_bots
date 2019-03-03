@@ -245,10 +245,12 @@ def send_error(e,update):
 def send_data(data):
     url = url_message_from_data(json.loads(data['data']))
     for chat in chats:
+        print(chat)
         try:
             if not data['data'] is None:
                 BOT.get_url(url + "&chat_id={}".format(chat))
         except Exception as e:
+            raise(e)
             pass
 
 def respond():

@@ -9,7 +9,6 @@ class BotBase:
         self.URL = url
 
     def get_url(self, url):
-        print(url)
         response = requests.get(url)
         content = response.content.decode("utf8")
         return content

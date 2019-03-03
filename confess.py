@@ -79,8 +79,6 @@ def url_message_from_data(data):
         caption = 'Confession #{}:\n'.format(number) + data['caption']
         caption = urllib.parse.quote_plus(caption)
         return URL + 'sendVoice?voice={}&caption={}'.format(data['file_id'],caption)
-    
-    
 
 def data_from_update(update):
     data = {}
@@ -108,10 +106,6 @@ def data_from_update(update):
         caption = ''
     
     data['caption'] = caption # all of the types after this have captions
-
-
-
-
 
     try: # photo
         sizes = update['message']['photo']
@@ -191,6 +185,7 @@ def main():
 def add_to_buffer(updates):
     global waiting
     for update in updates:
+        print(update)
         try:
             if is_button_response(update):
                 check_waiting(update['callback_query'])

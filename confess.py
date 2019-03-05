@@ -4,7 +4,7 @@ import time
 import urllib
 import string
 import smtplib
-
+import botbase
 from random import random
 
 reader = open('token.txt','r')
@@ -12,7 +12,9 @@ TOKEN = reader.readline()
 reader.close()
 waiting = []
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+BOT = botbase.BotBase(URL)
 confession_messages = ['Thank you for your sins.','...','[insert appropriate response here]',"Confess me harder daddy","How does that make you feel?","According to all know laws of aviation, there is no way the bee should be able to fly.","M̊̏̎ͯ̓̌̑u͇̫͖d̼̱̭̓̑ḣ̰̝̜͕̳ͮ͆͐u̸͇̙͓̗̮̅̽ͦ̈́t̩̘ͥ̑ͮͩs̫̺̹̙̻̱̃̆ͬͪͫ̅̂́ ͖̭̋̽̓̐̄ͨͥì̠̮̫͖s̪̳̳̳̻̞̣͘ ̤͓̃ͪͤ̑t̰̖͔̦̻̼ͥ͆ͤͅh̤̤e̿ͥ̿̂̉͡ ̬̤̼͊̿̃̍́͗͢b͉͔͈͈̯͆̆̆̈́̌̓̇e̖̘̬̝̓͂̍͑̾̅̚s͍̤͕͉̔́͒̈ͤ͋͗ͅț͓͕̭̼̤̯̉̃̓ͦ͂͌ ̋͒ͯ͂̎̿̀ȍ̴̞̩̲͚͎̳̹ͥͩf͙̬̰̃̌̄̍ͬ̽ͥ ͓̹̮͖̊â̻̜̯͓͉̯̾͟l̥̙ͫ̆̓̈́̐lͨ̈̍̾̉͐͢ ̖̳̣̭͚̲̊ͦ̓̿p̪̞͋ͬ͞o͂̾̇̀̒́š͇ͤ̽̿͗s͓̰̺̤̀̽̒̾͋i͕̺͓̪̺̻̙b͚̼͇̽ͨ̈͢lͯ͏͓ę̠̹̯ͪ̋ͫͭͅ ͤ̄ͨ̀p̞͚̘͉̟͚ͫà̫̟͖̗r̮̮͎̦̗̘̙͛̽͗̃ͪͭ͐͝t̸̳̦̪̭̼͓̮̂ͯ͐́̓̈́̄y̝̬͊̅́ ̤͛̒̌t͙̤͇̪̳͍̿̂̊̐̉͌͜h̷͕͎̊̽e͜m̬͍̝̳̮̊eͮ͆̓ͫ̚ͅs̺̟̫͐͐ͦ"]
+
 def load_chats():
     holder = []
     reader = open('chats.txt')
@@ -22,34 +24,6 @@ def load_chats():
     return holder
 
 chats = load_chats()
-
-def get_url(url):
-    response = requests.get(url)
-    content = response.content.decode("utf8")
-    return content
-
-def get_json_from_url(url):
-    content = get_url(url)
-    js = json.loads(content)
-    return js
-
-def get_updates(offset=None):
-    url = URL + "getUpdates?timeout=100"
-    if offset:
-        url += "&offset={}".format(offset)
-    js = get_json_from_url(url)
-    return js
-
-def get_last_update_id(updates):
-    update_ids = []
-    for update in updates["result"]:
-        update_ids.append(int(update["update_id"]))
-    return max(update_ids)
-
-def send_message(text, chat_id):
-    text = urllib.parse.quote_plus(text)
-    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
-    get_url(url)
 
 def should_message_be_sent(update):
     try:
@@ -62,7 +36,7 @@ def send_time_options(chat_id,message_id):
     keys = json.dumps({'inline_keyboard': [[{'text' : 'Instant', 'callback_data':3},{'text' : 'Cancel', 'callback_data':4}],[{'text' : '10 - 15 mins', 'callback_data':0},{'text' : '30 - 45 mins', 'callback_data':1},{'text' : '1 - 2 hrs', 'callback_data':2}]]})
     keys = urllib.parse.quote_plus(keys)
     url = URL + "sendMessage?text={}&chat_id={}&reply_markup={}&reply_to_message_id={}".format(text,chat_id,keys,message_id)
-    get_url(url)
+    BOT.get_url(url)
 
 def url_message_from_data(data):
     type = data['type']
@@ -105,8 +79,6 @@ def url_message_from_data(data):
         caption = 'Confession #{}:\n'.format(number) + data['caption']
         caption = urllib.parse.quote_plus(caption)
         return URL + 'sendVoice?voice={}&caption={}'.format(data['file_id'],caption)
-    
-    
 
 def data_from_update(update):
     data = {}
@@ -134,10 +106,6 @@ def data_from_update(update):
         caption = ''
     
     data['caption'] = caption # all of the types after this have captions
-
-
-
-
 
     try: # photo
         sizes = update['message']['photo']
@@ -207,9 +175,9 @@ def main():
     waiting = []
     last_update_id = None
     while True:
-        updates = get_updates(last_update_id)
+        updates = BOT.get_updates(last_update_id)
         if len(updates["result"]) > 0:
-            last_update_id = get_last_update_id(updates) + 1
+            last_update_id = BOT.get_last_update_id(updates) + 1
             add_to_buffer(updates['result'])
             respond()
         time.sleep(0.5)
@@ -232,7 +200,7 @@ def add_to_buffer(updates):
                 waiting += [data]
         except Exception as e:
             if not str(e) == 'added_message':
-                raise(e)
+                #raise(e)
                 send_error(e,update)
                 returner = False
             
@@ -252,13 +220,13 @@ def check_waiting(query):
             elif query['data'] == '3':
                 data['send_time'] = 0                           # Instant
             elif query['data'] == '4':
-                send_message('Okay, your confession was canceled.', message['from'])
+                BOT.send_message('Okay, your confession was canceled.', message['from'])
                 return   
             data['data'] = message['data']
             data['send_time'] += int(time.time())
             messages.write(json.dumps(data) + '\n') 
             messages.close()
-            send_message(confession_messages[int(random() * len(confession_messages))],message['from'])
+            BOT.send_message(confession_messages[int(random() * len(confession_messages))],message['from'])
 
 def is_button_response(update):
     try:
@@ -268,9 +236,8 @@ def is_button_response(update):
     return True
     
 def send_error(e,update):
-    pass
     # if str(e) != 'message':
-        # send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e),update['message']['from']['id'])
+    BOT.send_message('Dabney Confessions was unable to process your message.\nError message: ' + str(e), update['message']['from']['id'])
         # send_message('/bigoofletjaSINskiknow', update['message']['from']['id'])
 
 def send_data(data):
@@ -278,7 +245,7 @@ def send_data(data):
     for chat in chats:
         try:
             if not data['data'] is None:
-                get_url(url + "&chat_id={}".format(chat))
+                BOT.get_url(url + "&chat_id={}".format(chat))
         except Exception as e:
             pass
 

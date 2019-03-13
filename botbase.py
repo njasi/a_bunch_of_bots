@@ -52,6 +52,11 @@ class BotBase:
         text = urllib.parse.quote_plus(text)
         url = self.URL + "sendMessage?text={}&chat_id={}&reply_to_message_id={}".format(text, chat_id,reply_to_id)
         self.get_url(url)
+
+    def send_forward(self, message_id, from_id, to_id):
+        url = self.URL + "forwardMessage?chat_id={}&from_chat_id={}&message_id={}".format(to_id,from_id,message_id)
+        print(url)
+        self.get_url(url)
     
     def send_reply_with_photo(self, caption, photo_url, chat_id, reply_to_id):
         caption = text = urllib.parse.quote_plus(caption)
@@ -106,3 +111,6 @@ class BotBase:
                 self.send_message(responses[random.randint(0,len(responses)-1)],chat)
         except Exception as e:
             pass
+
+def chooseRandom(things):
+    return things[int(random() * things.length)]

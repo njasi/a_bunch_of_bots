@@ -17,10 +17,7 @@ client = wolframalpha.Client(app_id)
 
 BOT = botbase.BotBase(URL)
 
-TRIGGER_STICKERS = [
-    ('CAADAwADxAAD3zLTBALNnvfeN-vcAg',['no u']),
-    ('StickerId2Here',['list','of','possible','responses2'])
-]
+DUMB = ["That\'s a dumb question.", "Why even bother asking?", "How Caltech has fallen...", "I am Richard Feynman. You dare ask a god something so trivial?"]
 
 def main():
     last_update_id = None
@@ -55,10 +52,9 @@ def respond_smart(update):
     r = search(text)
 
     if r[0] == None:  # unable to find anything
-        BOT.send_reply('That\'s a dumb question.', chat,["message"]["message_id"])
+        BOT.send_reply(botbase.chooseRandom(DUMB), chat, reply_id)
         return
     if r[1] != None: # if it finds an image it will send it with the caption  #TODO: caption has a char limit of 1024
-        # print(r[1])
         BOT.send_reply_with_photo(r[0], r[1], chat, reply_id)
         return
     BOT.send_reply(r[0],chat,reply_id) # if there is not an image but it does find somthing
@@ -66,7 +62,6 @@ def respond_smart(update):
 
 def search(text = ''):
   res = client.query(text)
-  # res = {'@success' : "false"}
   if res['@success'] == 'false':
      return search_wiki(text), primaryImage(text)
   else:
@@ -81,13 +76,12 @@ def search(text = ''):
     else:
         question = resolveListOrDict(pod0['subpod'])
         question = removeBrackets(question)
-        # print("QUESTION: {}".format(question))
         return search_wiki(question), primaryImage(question)
 
 def search_wiki(query):
     result = wikipedia.search(query)
     if not result:
-        return
+        return None
     try:
         page = wikipedia.page(query)
         answer = wikipedia.summary(query, sentences=2)

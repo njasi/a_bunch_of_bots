@@ -185,6 +185,7 @@ def main():
 def add_to_buffer(updates):
     global waiting
     for update in updates:
+        print("There was a message")
         try:
             if is_button_response(update):
                 check_waiting(update['callback_query'])
